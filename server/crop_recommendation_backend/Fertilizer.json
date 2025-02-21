@@ -1,0 +1,51 @@
+[
+    {
+        "name": "10-26-26",
+        "type": "Balanced (NPK)",
+        "application_rate": 50,
+        "image_url": "https://example.com/10-26-26.jpg",
+        "buy_link": "https://kissanemart.com/products/iffco-102626-npk-micro-nutrient"
+    },
+    {
+        "name": "14-35-14",
+        "type": "Phosphorus Dominant",
+        "application_rate": 60,
+        "image_url": "https://example.com/14-35-14.jpg",
+        "buy_link": "https://kissanemart.com/products/cil-14-3514-p-major-nutrient"
+    },
+    {
+        "name": "17-17-17",
+        "type": "Balanced (NPK)",
+        "application_rate": 55,
+        "image_url": "https://example.com/17-17-17.jpg",
+        "buy_link": "https://www.amazon.in/Water-Soluble-N-P-K-17-17-17-Fertilizer/dp/B07M5H4KX7"
+    },
+    {
+        "name": "20-20",
+        "type": "Balanced (NPK)",
+        "application_rate": 50,
+        "image_url": "https://example.com/20-20.jpg",
+        "buy_link": "https://www.amazon.in/Fertilizer-Garden-Plants-100-Soluble-Plants/dp/B0B1F8Q8WH?th=1"
+    },
+    {
+        "name": "DAP",
+        "type": "Phosphorus",
+        "application_rate": 50,
+        "image_url": "https://example.com/dap.jpg",
+        "buy_link": "https://www.amazon.in/DAP-Fertilizer-Home-Plant-Gardening/dp/B0C5R9V651/ref=sr_1_5?crid=2MOK02ITUXBSH&dib=eyJ2IjoiMSJ9.iPGCC-eyPmiJ9ndzrkDgWJMXffk_NTwGYx7r2RnIcccEXTCNrvUtnAGGeL3GiJMPmz-he-fUaLX0y9GpqOiooW_iVHx1IvcS0Q83vzKze4DDP-NpEzO5XKqrvX6BmnSEClCrWIgntCxjGUtwWVLTouV4GDvEOFPtBOG4LKpEFe9DjAlJ5ymSZUNZ5GmaerXtZzJw6l-1qC0UPvMfTQhtzgkkQcI2mPrz-_vbC3OHnLCJBo6DWdwIsOnuburNiomdinWSRfIfGKdzOAva5hCLJ3WTuY-1sUEFmYvx58YIUSmt72qnYGZGvRtyJZY7TQnDMM_1zgxr2STg0V6KctPxAevb9xq-uhty8tf7q2x1S-YhizL4V6zGRCaZ51vysBSAbKwVjxkZdcP3vo_GjzgFUUkel7HN65VjuHveiXdiSHy3xWb7vZc9HUz6bS2KPnXi.GWe7PhQeTgS943eWMyss5WyWPDexDgDs-Vd5Is-6hzk&dib_tag=se&keywords=dap+fertilizers+for+plants+2kg&nsdOptOutParam=true&qid=1739732602&sprefix=DAP+%2Caps%2C273&sr=8-5"
+    },
+    {
+        "name": "Urea",
+        "type": "Nitrogen",
+        "application_rate": 100,
+        "image_url": "https://example.com/urea.jpg",
+        "buy_link": "https://www.amazon.in/urea-fertilizer/s?k=urea+fertilizer"
+    },
+    {
+        "name": "Potash",
+        "type": "Potassium",
+        "application_rate": 40,
+        "image_url": "https://example.com/potash.jpg",
+        "buy_link": "https://www.amazon.in/s?k=potash&crid=1HWEBAZYMR6RZ&sprefix=potash%2Caps%2C435&ref=nb_sb_noss_1"
+    }
+]
