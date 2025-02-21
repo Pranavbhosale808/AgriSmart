@@ -1,11 +1,10 @@
-#!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
 import os
 import sys
+from dotenv import load_dotenv
 
+load_dotenv()
 
 def main():
-    """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'crop_recommendation_backend.settings')
     try:
         from django.core.management import execute_from_command_line
@@ -15,8 +14,13 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
-    execute_from_command_line(sys.argv)
 
+    # Automatically use the host and port from .env
+    host = os.getenv("DJANGO_RUN_HOST", "127.0.0.1")
+    port = os.getenv("DJANGO_PORT", "8000")
+    
+    sys.argv = ["manage.py", "runserver", f"{host}:{port}"]
+    execute_from_command_line(sys.argv)
 
 if __name__ == '__main__':
     main()
