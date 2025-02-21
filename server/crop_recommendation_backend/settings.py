@@ -1,6 +1,7 @@
 
 import os
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,14 +11,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-c5l&#jn3ce$6*_^=@!6$4gs^9!2u^b#clktqzpzbyx)k#de842'
+# SECRET_KEY = 'django-insecure-c5l&#jn3ce$6*_^=@!6$4gs^9!2u^b#clktqzpzbyx)k#de842'
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-c5l&#jn3ce$6*_^=@!6$4gs^9!2u^b#clktqzpzbyx)k#de842')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = [
-    'localhost', '127.0.0.1'
-]
 
 
 # Application definition
@@ -38,6 +36,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -120,6 +119,17 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR/'recommendation','static'),  # Adjust the path as necessary
 ]
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Database configuration
+# DATABASE_URL = os.environ.get('DATABASE_URL')
+# if DATABASE_URL:
+#     DATABASES['default'] = dj_database_url.config(
+#         default=DATABASE_URL,
+#         conn_max_age=600
+#     )
 
 # Serve Static Files in Development
 if DEBUG:
