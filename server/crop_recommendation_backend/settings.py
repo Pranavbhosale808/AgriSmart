@@ -9,6 +9,7 @@ load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+DEBUG = True
 
 
 # Quick-start development settings - unsuitable for production
@@ -16,9 +17,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-c5l&#jn3ce$6*_^=@!6$4gs^9!2u^b#clktqzpzbyx)k#de842'
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-c5l&#jn3ce$6*_^=@!6$4gs^9!2u^b#clktqzpzbyx)k#de842')
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1').split(',')
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-c5l&#jn3ce$6*_^=@!6$4gs^9!2u^b#clktqzpzbyx)k#de842')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1').split(',')
 
 
 
@@ -49,10 +50,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-]
-CORS_ALLOW_CREDENTIALS = True
+
 ROOT_URLCONF = 'crop_recommendation_backend.urls'
 
 TEMPLATES = [
@@ -85,6 +83,8 @@ DATABASES = {
     }
 }
 
+database_url=os.getenviron.get('DATABASE_URL');
+DATABASES["default"]=dj_database_url.parse(database_url)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -122,11 +122,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-     os.path.join(BASE_DIR, "recommendations/static"),  # Adjust the path as necessary
+      os.path.join(BASE_DIR/'recommendation','static'),
 ]
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Database configuration
 # DATABASE_URL = os.environ.get('DATABASE_URL')

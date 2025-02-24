@@ -18,8 +18,11 @@ def main():
     # Automatically use the host and port from .env
     host = os.getenv("DJANGO_RUN_HOST", "127.0.0.1")
     port = os.getenv("DJANGO_PORT", "8000")
-    
-    sys.argv = ["manage.py", "runserver", f"{host}:{port}"]
+
+    # Only override command when no argument is provided
+    if len(sys.argv) == 1:
+        sys.argv = ["manage.py", "runserver", f"{host}:{port}"]
+
     execute_from_command_line(sys.argv)
 
 if __name__ == '__main__':

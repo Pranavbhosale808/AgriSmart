@@ -187,7 +187,7 @@ def crop_recommendation(request):
         "translation": "चावल",
         "image": "crop_images/Rice.jpg",
         "soil_type": "Clayey, Loamy",
-        "conditions": "Requires standing water, humid climate, high rainfall."
+        "conditions": "Requires standing water, humid climate, high rainfall."  
     },
     2: {
         "name": "Maize",
@@ -344,6 +344,7 @@ def crop_recommendation(request):
 
         # Construct full image URL using the static directory
         image_url = request.build_absolute_uri(f"{settings.STATIC_URL}{crop_data['image']}")
+        print("Image",image_url)
 
         # Return the response as JSON
         return JsonResponse({
@@ -390,6 +391,10 @@ def get_labs(request):
 
     labs = filtered_data.to_dict(orient="records")
     return JsonResponse({"labs": labs}, safe=False)
+
+
+
+
 
 
 
