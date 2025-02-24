@@ -77,7 +77,7 @@ fertilizer_info = {
     5: {"name": "DAP", "api_id": "128", "application_rate": 120},
     6: {"name": "Urea", "api_id": "129", "application_rate": 110}
 }
-
+@csrf_exempt
 def fertilizer_recommendation(request):
     try:
         # Get parameters from request

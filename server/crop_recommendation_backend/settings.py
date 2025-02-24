@@ -50,7 +50,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
+CORS_ALLOW_CREDENTIALS = True
 ROOT_URLCONF = 'crop_recommendation_backend.urls'
 
 TEMPLATES = [
@@ -83,7 +86,7 @@ DATABASES = {
     }
 }
 
-database_url=os.getenviron.get('DATABASE_URL');
+database_url=os.environ.get('DATABASE_URL');
 DATABASES["default"]=dj_database_url.parse(database_url)
 
 # Password validation
