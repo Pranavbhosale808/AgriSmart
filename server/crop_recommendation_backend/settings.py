@@ -52,8 +52,13 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://agri-smart-client.vercel.app"
 ]
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    "https://agri-smart-client.vercel.app",
+ 
+]
 ROOT_URLCONF = 'crop_recommendation_backend.urls'
 
 TEMPLATES = [
