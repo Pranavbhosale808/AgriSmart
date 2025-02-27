@@ -34,7 +34,6 @@ INSTALLED_APPS = [
     'recommendations',
     'rest_framework',
     'corsheaders',
-    'accounts',
     'rest_framework.authtoken'
 ]
 
