@@ -1,6 +1,7 @@
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -43,7 +44,20 @@ def login(request):
     else:
         return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
-# Logout API (Simply responds with a success message)
+# Authentication Status API
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def auth_status(request):
+    user = request.user
+    return Response({
+        "isAuthenticated": True,
+        "user": {
+            "id": user.id,
+            "username": user.username,
+        }
+    }, status=status.HTTP_200_OK)
+
+# Logout API
 @api_view(['POST'])
 def logout(request):
     return Response({"message": "User logged out successfully"}, status=status.HTTP_200_OK)

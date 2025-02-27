@@ -10,23 +10,6 @@ import pandas as pd
 import gdown
 
 
-
-# # Load crop recommendation model
-# crop_model_path = os.path.join(settings.BASE_DIR, 'recommendations', 'models', '/home/pbhosale/Desktop/Final_Year_Project/server/crop_recommendation_backend/models/Crop_recommendation.pkl')
-# with open(crop_model_path, 'rb') as f:
-#     crop_model = pickle.load(f)
-
-# # Load fertilizer recommendation model
-# fertilizer_model_path = os.path.join(settings.BASE_DIR, 'recommendations', 'models', '/home/pbhosale/Desktop/Final_Year_Project/server/crop_recommendation_backend/models/Fertilizer.pkl')
-# with open(fertilizer_model_path, 'rb') as f:
-#     fertilizer_model = pickle.load(f)
-
-# # Load fertilizer recommendation model
-# with open("/home/pbhosale/Desktop/Final_Year_Project/server/crop_recommendation_backend/models/crop_yield.pkl", "rb") as f:
-#     classifier = pickle.load(f) 
-
-
-
 # Google Drive File IDs for models
 file_ids = {
     "crop_model": "1CZQoCicOE8wj10cik7aLKLjAcyH1_KEd",
@@ -179,6 +162,7 @@ def crop_recommendation(request):
 
         # Make prediction
         prediction = crop_model.predict(features)[0]
+        print("Predicted crop : ",prediction)
 
         # Crop info dictionary with corrected relative image paths
         crop_info = {

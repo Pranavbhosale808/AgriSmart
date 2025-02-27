@@ -2,10 +2,8 @@
 import os
 from pathlib import Path
 import dj_database_url
-from dotenv import load_dotenv
 
 # Load environment variables from .env file
-load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -36,6 +34,8 @@ INSTALLED_APPS = [
     'recommendations',
     'rest_framework',
     'corsheaders',
+    'accounts',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -56,6 +56,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
     "https://agri-smart-client.vercel.app",
  
 ]
@@ -91,8 +92,8 @@ DATABASES = {
     }
 }
 
-database_url=os.environ.get('DATABASE_URL');
-DATABASES["default"]=dj_database_url.parse(database_url)
+# database_url=os.environ.get('DATABASE_URL');
+# DATABASES["default"]=dj_database_url.parse(database_url)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -154,3 +155,16 @@ if DEBUG:
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# JWT Authentication Settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+     'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',  # Temporarily allow all requests
+    ),
+    
+}
+
