@@ -59,6 +59,10 @@ CORS_ALLOWED_ORIGINS = [
     "https://agri-smart-client.vercel.app",
  
 ]
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "https://agri-smart-client.vercel.app",
+]
 ROOT_URLCONF = 'crop_recommendation_backend.urls'
 
 TEMPLATES = [

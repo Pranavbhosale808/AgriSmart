@@ -10,11 +10,12 @@ import pandas as pd
 import gdown
 
 
+
 # Google Drive File IDs for models
 file_ids = {
     "crop_model": "1CZQoCicOE8wj10cik7aLKLjAcyH1_KEd",
     "fertilizer_model": "1ETwwudB0gAsOIopfUg76fQKMo_cykvBR",
-    # "crop_yield_model": "1gYxsnvimVHCqGo0ofF_3SAeWY5FkRvlW"
+    "crop_yield_model": "1BCK-elhagCyH0tW5eoKvVYkkBNMrfLm3"
 }
 
 # Directory to store downloaded models
@@ -45,8 +46,8 @@ with open(model_paths["crop_model"], "rb") as f:
 with open(model_paths["fertilizer_model"], "rb") as f:
     fertilizer_model = pickle.load(f)
 
-# with open(model_paths["crop_yield_model"], "rb") as f:
-#    classifier = pickle.load(f)
+with open(model_paths["crop_yield_model"], "rb") as f:
+   crop_yield_model = pickle.load(f)
     
 
 
@@ -118,32 +119,7 @@ def fertilizer_recommendation(request):
     
     except Exception as e:
         return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
-
-@csrf_exempt
-def crop_yield_prediction(request):
-    if request.method == 'POST':
-        try:
-            # Parse the JSON data from the request
-            data = json.loads(request.body)
-
-            # Extract features from the request
-            area = data.get('Area')
-            item = data.get('Item')
-            average_rain_fall_mm_per_year = data.get('average_rain_fall_mm_per_year')
-            pesticides_tonnes = data.get('pesticides_tonnes')
-            avg_temp = data.get('avg_temp')
-
-            # Prepare the input for the model
-            features = np.array([[area, item, average_rain_fall_mm_per_year, pesticides_tonnes, avg_temp]])
-
-            # Make prediction
-            prediction = classifier.predict(features)
-
-            # Return the prediction as JSON
-            return JsonResponse({'predicted_yield': prediction[0]})
-
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
+    
     
 @csrf_exempt
 def crop_recommendation(request):
@@ -160,11 +136,10 @@ def crop_recommendation(request):
         # Prepare features for prediction
         features = np.array([[N, P, K, temperature, humidity, ph, rainfall]])
 
-        # Make prediction
-        prediction = crop_model.predict(features)[0]
-        print("Predicted crop : ",prediction)
-
-        # Crop info dictionary with corrected relative image paths
+        # Get top 3 predictions
+        predictions = crop_model.predict_proba(features)[0]
+        top_indices = np.argsort(predictions)[-3:][::-1]  # Top 3 crops
+        
         crop_info = {
     1: {
         "name": "Rice",
@@ -302,7 +277,7 @@ def crop_recommendation(request):
     20: {
         "name": "Kidneybeans",
         "translation": "राजमा",
-        "image": "crop_images/Kidneybeans.jpeg",
+        "image": "crop_images/Kidneybeans.jpg",
         "soil_type": "Sandy loam, Well-drained",
         "conditions": "Grows well in warm climate, moderate water needs."
     },
@@ -322,26 +297,89 @@ def crop_recommendation(request):
     },
 }
 
-
-        # Get crop details or return "Unknown"
-        crop_data = crop_info.get(prediction, {"name": "Unknown", "translation": "Unknown", "image": "default.jpg","soil_type":"Unknown","conditions":"Unknown"})
-
-        # Construct full image URL using the static directory
-        image_url = request.build_absolute_uri(f"{settings.STATIC_URL}{crop_data['image']}")
-        print("Image",image_url)
+        
+        # Construct response data for top crops
+        top_crops = []
+        for idx in top_indices:
+            crop_data = crop_info.get(idx + 1, {"name": "Unknown", "translation": "Unknown", "image": "default.jpg", "soil_type": "Unknown", "conditions": "Unknown"})
+            image_url = request.build_absolute_uri(f"{settings.STATIC_URL}{crop_data['image']}")
+            top_crops.append({
+                'crop': crop_data['name'],
+                'translation': crop_data['translation'],
+                'image': image_url,
+                'soil_type': crop_data['soil_type'],
+                'conditions': crop_data['conditions']
+            })
 
         # Return the response as JSON
-        return JsonResponse({
-            'crop': crop_data['name'],
-            'translation': crop_data['translation'],
-            'image': image_url,
-            'soil_type':crop_data['soil_type'],
-            'conditions':crop_data['conditions']
+        return JsonResponse({'recommendations': top_crops})
+    except Exception as e:
+        return JsonResponse({'error': f'Internal Server Error: {str(e)}'}, status=500)
 
-        })
+
+#################################################### CROP YIELD ####################################
+
+# Encoding mappings
+state_mapping = {
+    'Andhra Pradesh': 0, 'Arunachal Pradesh': 1, 'Assam': 2, 'Bihar': 3, 'Chhattisgarh': 4, 'Delhi': 5,
+    'Goa': 6, 'Gujarat': 7, 'Haryana': 8, 'Himachal Pradesh': 9, 'Jammu and Kashmir': 10, 'Jharkhand': 11,
+    'Karnataka': 12, 'Kerala': 13, 'Madhya Pradesh': 14, 'Maharashtra': 15, 'Manipur': 16, 'Meghalaya': 17,
+    'Mizoram': 18, 'Nagaland': 19, 'Odisha': 20, 'Puducherry': 21, 'Punjab': 22, 'Sikkim': 23, 'Tamil Nadu': 24,
+    'Telangana': 25, 'Tripura': 26, 'Uttar Pradesh': 27, 'Uttarakhand': 28, 'West Bengal': 29
+}
+
+season_mapping = {
+    'Autumn': 0, 'Kharif': 1, 'Rabi': 2, 'Summer': 3, 'Whole Year': 4, 'Winter': 5
+}
+
+crop_mapping = {
+    'Arecanut': 0, 'Arhar/Tur': 1, 'Bajra': 2, 'Banana': 3, 'Barley': 4, 'Black pepper': 5, 'Cardamom': 6, 
+    'Cashewnut': 7, 'Castor seed': 8, 'Coconut': 9, 'Coriander': 10, 'Cotton(lint)': 11, 'Cowpea(Lobia)': 12,
+    'Dry chillies': 13, 'Garlic': 14, 'Ginger': 15, 'Gram': 16, 'Groundnut': 17, 'Guar seed': 18, 'Horse-gram': 19,
+    'Jowar': 20, 'Jute': 21, 'Khesari': 22, 'Linseed': 23, 'Maize': 24, 'Masoor': 25, 'Mesta': 26, 'Moong(Green Gram)': 27,
+    'Moth': 28, 'Niger seed': 29, 'Oilseeds total': 30, 'Onion': 31, 'Other Rabi pulses': 32, 'Other Cereals': 33, 
+    'Other Kharif pulses': 34, 'Other Summer Pulses': 35, 'Peas & beans (Pulses)': 36, 'Potato': 37, 'Ragi': 38,
+    'Rapeseed &Mustard': 39, 'Rice': 40, 'Safflower': 41, 'Sannhamp': 42, 'Sesamum': 43, 'Small millets': 44, 
+    'Soyabean': 45, 'Sugarcane': 46, 'Sunflower': 47, 'Sweet potato': 48, 'Tapioca': 49, 'Tobacco': 50, 
+    'Turmeric': 51, 'Urad': 52, 'Wheat': 53, 'other oilseeds': 54
+}
+
+@csrf_exempt
+def crop_yield_prediction(request):
+    try:
+        # Extracting input parameters safely
+        state = request.GET.get('state', '').strip()
+        season = request.GET.get('season', '').strip()
+        crop = request.GET.get('crop', '').strip()
+        crop_year = request.GET.get('crop_year', '').strip()
+        area = request.GET.get('area', '').strip()
+        production = request.GET.get('production', '').strip()
+        annual_rainfall = request.GET.get('annual_rainfall', '').strip()
+        fertilizer = request.GET.get('fertilizer', '').strip()
+        pesticide = request.GET.get('pesticide', '').strip()
+
+        # Encoding categorical variables
+        state_encoded = state_mapping.get(state, -1)
+        season_encoded = season_mapping.get(season, -1)
+        crop_encoded = crop_mapping.get(crop, -1)
+
+         # Validate input values
+        if -1 in [state_encoded, season_encoded, crop_encoded, crop_year]:
+            return JsonResponse({'error': 'Invalid input values'}, status=400)
+
+        # Prepare features for prediction
+        features = np.array([[crop_encoded, crop_year, season_encoded, state_encoded, area, production, annual_rainfall, fertilizer, pesticide]])
+        print(features)
+
+        # Predict yield
+        predicted_yield = crop_yield_model.predict(features)[0]
+
+        # Construct response
+        return JsonResponse({'predicted_yield': predicted_yield})
 
     except Exception as e:
         return JsonResponse({'error': f'Internal Server Error: {str(e)}'}, status=500)
+
     
 @csrf_exempt
 def get_labs(request):
@@ -375,10 +413,4 @@ def get_labs(request):
 
     labs = filtered_data.to_dict(orient="records")
     return JsonResponse({"labs": labs}, safe=False)
-
-
-
-
-
-
 
