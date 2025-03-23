@@ -3,7 +3,7 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 from .auth_views import signup, login, logout , auth_status
-from .views import get_labs 
+from .views import get_labs,recommend_organic_fertilizer
 from .save_view import  favourite,get_favourite,delete_favourite
 from .api_views import get_external_data,get_user_location
 
@@ -12,6 +12,7 @@ urlpatterns = [
     path('fertilizer/', views.fertilizer_recommendation, name='fertilizer_recommendation'),
     path('crop-yield/', views.crop_yield_prediction, name='crop_yield_prediction'),
     path("labs/", get_labs, name="get_labs"),
+    path("organic_fertilizer/",recommend_organic_fertilizer, name="recommend_organic_fertilizer"),
 
 
     # Authetication Urls

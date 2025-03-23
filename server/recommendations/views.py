@@ -2,13 +2,11 @@ import pickle
 import os
 from django.conf import settings
 from django.http import JsonResponse
-import numpy as np
 from django.views.decorators.csrf import csrf_exempt
-import json
 from .models import Fertilizer
-import pandas as pd
 import gdown
-
+import pandas as pd
+import numpy as np
 
 
 # Google Drive File IDs for models
@@ -48,10 +46,8 @@ with open(model_paths["fertilizer_model"], "rb") as f:
 
 with open(model_paths["crop_yield_model"], "rb") as f:
    crop_yield_model = pickle.load(f)
-    
 
 
-# Dictionary mapping ML prediction to fertilizer details
 fertilizer_info = {
     0: {"name": "10-26-26", "api_id": "123", "application_rate": 90},
     1: {"name": "14-35-14", "api_id": "124", "application_rate": 80},
@@ -124,7 +120,7 @@ def fertilizer_recommendation(request):
 @csrf_exempt
 def crop_recommendation(request):
     try:
-        # Get input parameters from the request
+       # Get input parameters from the request
         N = float(request.GET.get('N', 0))
         P = float(request.GET.get('P', 0))
         K = float(request.GET.get('K', 0))
@@ -132,6 +128,28 @@ def crop_recommendation(request):
         humidity = float(request.GET.get('humidity', 0))
         ph = float(request.GET.get('ph', 0))
         rainfall = float(request.GET.get('rainfall', 0))
+
+        # Validation for each parameter
+        if not (0 <= N <= 140):
+            return JsonResponse({'error': 'N value out of range (0-140)'}, status=400)
+
+        if not (5 <= P <= 145):
+            return JsonResponse({'error': 'P value out of range (5-145)'}, status=400)
+
+        if not (5 <= K <= 205):
+            return JsonResponse({'error': 'K value out of range (5-205)'}, status=400)
+
+        if not (8.825674745 <= temperature <= 43.67549305):
+            return JsonResponse({'error': 'Temperature value out of range (8.82 - 43.67)'}, status=400)
+
+        if not (14.25803981 <= humidity <= 99.98187601):
+            return JsonResponse({'error': 'Humidity value out of range (14.25 - 99.98)'}, status=400)
+
+        if not (3.504752314 <= ph <= 10):  # Ensuring max is 10
+            return JsonResponse({'error': 'pH value out of range (3.5 - 10)'}, status=400)
+
+        if not (20.21126747 <= rainfall <= 298.5601175):
+            return JsonResponse({'error': 'Rainfall value out of range (20.21 - 298.56)'}, status=400)
 
         # Prepare features for prediction
         features = np.array([[N, P, K, temperature, humidity, ph, rainfall]])
@@ -191,9 +209,9 @@ def crop_recommendation(request):
         "conditions": "Needs warm, dry climate with irrigation support."
     },
     8: {
-        "name": "Apple",
-        "translation": "सेब",
-        "image": "crop_images/Apple.jpg",
+        "name": "Potato",
+        "translation": "आलू",
+        "image": "crop_images/Potato.jpg",
         "soil_type": "Well-drained Loamy",
         "conditions": "Requires cold climate, moderate rainfall, good drainage."
     },
@@ -205,7 +223,7 @@ def crop_recommendation(request):
         "conditions": "Requires warm temperature, dry climate, moderate irrigation."
     },
     10: {
-        "name": "Watermelon",
+        "name": "Water Melon",
         "translation": "तरबूज",
         "image": "crop_images/Watermelon.jpg",
         "soil_type": "Sandy loam, Well-drained",
@@ -219,7 +237,7 @@ def crop_recommendation(request):
         "conditions": "Requires hot and dry climate, needs less water."
     },
     12: {
-        "name": "Soyachuncks",
+        "name": "Soyabean",
         "translation": "सोयाबीन",
         "image": "crop_images/Soyachuncks.jpg",
         "soil_type": "Loamy, Well-drained",
@@ -247,7 +265,7 @@ def crop_recommendation(request):
         "conditions": "Requires cool climate, moderate irrigation."
     },
     16: {
-        "name": "Blackgram",
+        "name": "Black Gram",
         "translation": "उड़द",
         "image": "crop_images/Blackgram.jpg",
         "soil_type": "Sandy loam, Well-drained",
@@ -261,14 +279,14 @@ def crop_recommendation(request):
         "conditions": "Thrives in warm temperature, needs moderate rainfall."
     },
     18: {
-        "name": "Mothbeans",
+        "name": "Matki",
         "translation": "मोठ",
         "image": "crop_images/Mothbeans.jpeg",
         "soil_type": "Sandy, Well-drained",
         "conditions": "Requires dry climate, high sunlight exposure."
     },
     19: {
-        "name": "Pigeonpeas",
+        "name": "Pegeon Pea (Arhar Fali)",
         "translation": "अरहर",
         "image": "crop_images/Pigeonpeas.jpeg",
         "soil_type": "Loamy, Well-drained",
@@ -289,9 +307,9 @@ def crop_recommendation(request):
         "conditions": "Needs cool climate, less water, requires dry spells."
     },
     22: {
-        "name": "Coffee",
-        "translation": "कॉफी",
-        "image": "crop_images/Coffee.jpg",
+        "name": "Sugarcane",
+        "translation": "गन्ना",
+        "image": "crop_images/Sugarcane.jpg",
         "soil_type": "Volcanic, Loamy",
         "conditions": "Thrives in humid, high-altitude regions, moderate rainfall."
     },
@@ -414,3 +432,52 @@ def get_labs(request):
     labs = filtered_data.to_dict(orient="records")
     return JsonResponse({"labs": labs}, safe=False)
 
+# Load the trained model & encoders
+with open("/home/pbhosale/Desktop/Final_Year_Project/server/recommendations/static/models/fertilizer_model.pkl", "rb") as model_file:
+    model = pickle.load(model_file)
+
+with open("/home/pbhosale/Desktop/Final_Year_Project/server/recommendations/static/models/encoder.pkl", "rb") as encoder_file:
+    label_encoders = pickle.load(encoder_file)
+
+def recommend_organic_fertilizer(request):
+    try:
+        crop = request.GET.get("crop")
+        soil = request.GET.get("soil")
+        rainfall = float(request.GET.get("rainfall"))
+        weather = request.GET.get("weather")
+        ph_level = float(request.GET.get("ph"))
+
+        # Encode categorical values
+        if crop in label_encoders["Crop Type"].classes_:
+            crop_encoded = label_encoders["Crop Type"].transform([crop])[0]
+        else:
+            return JsonResponse({"error": "Invalid crop type"}, status=400)
+
+        if soil in label_encoders["Soil Type"].classes_:
+            soil_encoded = label_encoders["Soil Type"].transform([soil])[0]
+        else:
+            return JsonResponse({"error": "Invalid soil type"}, status=400)
+
+        if weather in label_encoders["Weather Condition"].classes_:
+            weather_encoded = label_encoders["Weather Condition"].transform([weather])[0]
+        else:
+            return JsonResponse({"error": "Invalid weather condition"}, status=400)
+
+        # Prepare input array
+        input_data = np.array([[crop_encoded, soil_encoded, rainfall, weather_encoded, ph_level]])
+
+        # Predict Fertilizer
+        predicted_label = model.predict(input_data)[0]
+        predicted_fertilizer = label_encoders["Recommended Organic Fertilizer"].inverse_transform([predicted_label])[0]
+
+        # Get top 3 similar fertilizers (based on probabilities)
+        probabilities = model.predict_proba(input_data)[0]
+        top_3_indices = np.argsort(probabilities)[-3:][::-1]
+        top_3_fertilizers = label_encoders["Recommended Organic Fertilizer"].inverse_transform(top_3_indices)
+
+        return JsonResponse({
+            "recommended_fertilizers": list(top_3_fertilizers)
+        })
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
