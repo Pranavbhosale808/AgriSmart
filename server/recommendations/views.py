@@ -433,10 +433,10 @@ def get_labs(request):
     return JsonResponse({"labs": labs}, safe=False)
 
 # Load the trained model & encoders
-with open("/home/pbhosale/Desktop/Final_Year_Project/server/recommendations/static/models/fertilizer_model.pkl", "rb") as model_file:
+with open("recommendations/static/models/fertilizer_model.pkl", "rb") as model_file:
     model = pickle.load(model_file)
 
-with open("/home/pbhosale/Desktop/Final_Year_Project/server/recommendations/static/models/encoder.pkl", "rb") as encoder_file:
+with open("recommendations/static/models/encoder.pkl", "rb") as encoder_file:
     label_encoders = pickle.load(encoder_file)
 
 def recommend_organic_fertilizer(request):
