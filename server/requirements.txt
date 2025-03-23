@@ -29,7 +29,6 @@ livereload==2.6.3
 llvmlite==0.43.0
 lunr==0.7.0
 lxml==5.2.1
-lz4==4.0.2+dfsg
 Markdown==3.6
 MarkupSafe==2.1.5
 matplotlib==3.6.3
