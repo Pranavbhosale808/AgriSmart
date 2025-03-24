@@ -38,7 +38,6 @@ numba==0.59.1
 numexpr==2.10.1
 numpy==1.26.4
 odfpy==1.4.1
-olefile==0.46
 onboard==1.4.1
 openpyxl==3.1.2
 packaging==23.2
