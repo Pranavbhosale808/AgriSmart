@@ -94,7 +94,7 @@ CSRF_TRUSTED_ORIGINS = [f'https://{host}' for host in ALLOWED_HOSTS if host.star
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
-
+DATABASES = {}
 database_url=os.environ.get('DATABASE_URL');
 DATABASES["default"]=dj_database_url.parse(database_url)
 
